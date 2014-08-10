@@ -78,12 +78,6 @@ static void cui_item_offlinemode_activate(GtkMenuItem *menuitem,
 	connman_manager_set_offlinemode(offlinemode);
 }
 
-static void cui_item_quit_activate(GtkMenuItem *menuitem,
-						gpointer user_data)
-{
-	gtk_main_quit();
-}
-
 static void cui_popup_right_menu(GtkStatusIcon *trayicon,
 						guint button,
 						guint activate_time,
@@ -135,7 +129,6 @@ static void cui_enable_item(gboolean enable)
 	set_widget_hidden(cui_builder, "cui_sep_technology_down", enable);
 	set_widget_hidden(cui_builder, "cui_item_tethering", enable);
 	set_widget_hidden(cui_builder, "cui_sep_tethering", enable);
-	set_widget_hidden(cui_builder, "cui_item_quit", FALSE);
 
 	disabled = enable;
 }
@@ -180,8 +173,6 @@ gint cui_load_right_menu(GtkBuilder *builder, GtkStatusIcon *trayicon)
 
 	g_signal_connect(cui_right_menu, "deactivate",
 				G_CALLBACK(cui_popdown_right_menu), NULL);
-	g_signal_connect(cui_item_quit, "activate",
-				G_CALLBACK(cui_item_quit_activate), NULL);
 	g_signal_connect(cui_item_mode_off, "activate",
 			G_CALLBACK(cui_item_offlinemode_activate), NULL);
 	g_signal_connect(cui_item_mode_on, "activate",
@@ -193,10 +184,6 @@ gint cui_load_right_menu(GtkBuilder *builder, GtkStatusIcon *trayicon)
 	cui_item_tethering = (GtkImageMenuItem *) gtk_builder_get_object(
 						builder, "cui_item_tethering");
 
-	cui_theme_get_tethering_icone_and_info(&image, NULL);
-	if (image != NULL)
-		gtk_image_menu_item_set_image(cui_item_tethering,
-					gtk_image_new_from_pixbuf(image));
 
 	cui_tray_hook_right_menu(cui_popup_right_menu);
 
