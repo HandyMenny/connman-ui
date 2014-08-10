@@ -53,9 +53,7 @@ void cui_theme_get_tethering_icone_and_info(GdkPixbuf **image,
 
 gint cui_load_trayicon(GtkBuilder *builder);
 void cui_trayicon_update_icon(void);
-void cui_tray_hook_left_menu(gpointer callback);
 void cui_tray_hook_right_menu(gpointer callback);
-void cui_tray_left_menu_disable(void);
 void cui_tray_enable(void);
 void cui_tray_disable(void);
 
@@ -63,7 +61,6 @@ gint cui_load_agent_dialogs(void);
 void cui_agent_init_callbacks(void);
 void cui_agent_set_selected_service(const char *path, const char *name);
 void cui_agent_set_wifi_tethering_settings(const char *path, gboolean tether);
-gint cui_load_left_menu(GtkBuilder *builder, GtkStatusIcon *trayicon);
 gint cui_load_right_menu(GtkBuilder *builder, GtkStatusIcon *trayicon);
 void cui_right_menu_enable_only_quit(void);
 void cui_right_menu_enable_all(void);

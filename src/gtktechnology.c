@@ -265,11 +265,10 @@ GtkTechnology *gtk_technology_new(const gchar *path)
 
 	if (g_strcmp0(connman_technology_get_type(path_copy), "wifi") == 0) {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(technology),
-				_("Left click to enable/disable\n"
-				"Right click to set tethering information"));
+				"Left for on/off, right for tethering");
 	} else
 		gtk_widget_set_tooltip_text(GTK_WIDGET(technology),
-						_("Left to enable/disable"));
+						_("Left for on/off"));
 
 	enabled = connman_technology_is_enabled(path_copy);
 	gtk_switch_set_active(priv->enabler, enabled);

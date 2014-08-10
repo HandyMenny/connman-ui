@@ -24,9 +24,7 @@
 #define CUI_TRAYICON_UI_PATH CUI_UI_PATH "/tray.ui"
 
 static GtkStatusIcon *cui_trayicon = NULL;
-static void (*popup_left_menu_f)(GtkStatusIcon *, gpointer);
 static void (*popup_rigt_menu_f)(GtkStatusIcon *, guint, guint, gpointer);
-static int left_menu_handler_id = 0;
 static int right_menu_handler_id = 0;
 
 void cui_trayicon_update_icon(void)
@@ -45,29 +43,13 @@ void cui_trayicon_update_icon(void)
 	gtk_status_icon_set_visible(cui_trayicon, TRUE);
 }
 
-void cui_tray_hook_left_menu(gpointer callback)
-{
-	popup_left_menu_f = callback;
-}
-
 void cui_tray_hook_right_menu(gpointer callback)
 {
 	popup_rigt_menu_f = callback;
 }
 
-void cui_tray_left_menu_disable(void)
-{
-	if (left_menu_handler_id != 0) {
-		g_signal_handler_disconnect(cui_trayicon, left_menu_handler_id);
-		left_menu_handler_id = 0;
-	}
-}
-
 void cui_tray_enable(void)
 {
-	if (left_menu_handler_id == 0)
-		left_menu_handler_id = g_signal_connect(cui_trayicon,
-			"activate", G_CALLBACK(popup_left_menu_f), NULL);
 	if (right_menu_handler_id == 0)
 		right_menu_handler_id = g_signal_connect(cui_trayicon,
 			"popup-menu", G_CALLBACK(popup_rigt_menu_f), NULL);
@@ -75,14 +57,10 @@ void cui_tray_enable(void)
 
 void cui_tray_disable(void)
 {
-	if (left_menu_handler_id != 0)
-		g_signal_handler_disconnect(cui_trayicon,
-					left_menu_handler_id);
 	if (right_menu_handler_id != 0)
 		g_signal_handler_disconnect(cui_trayicon,
 					right_menu_handler_id);
 
-	left_menu_handler_id = 0;
 	right_menu_handler_id = 0;
 }
 
@@ -103,7 +81,6 @@ gint cui_load_trayicon(GtkBuilder *builder)
 
 	cui_trayicon_update_icon();
 
-	cui_load_left_menu(builder, cui_trayicon);
 	cui_load_right_menu(builder, cui_trayicon);
 
 	return 0;

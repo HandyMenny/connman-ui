@@ -21,14 +21,19 @@
 
 #include <connman-ui-gtk.h>
 #include <gtktechnology.h>
+#include <gtkservice.h>
 
 #define CUI_RIGHT_MENU_UI_PATH CUI_UI_PATH "/right_menu.ui"
 
 static GtkMenu *cui_right_menu = NULL;
+static GtkMenu *cui_more_menu = NULL;
+static GtkMenu *cui_tethering_menu = NULL;
+static GtkMenuItem *cui_list_more_item = NULL;
+static GtkMenuItem *cui_scan_spinner = NULL;
 static GtkWidget *cui_item_mode_off = NULL;
 static GtkWidget *cui_item_mode_on = NULL;
-static GtkMenu *cui_tethering_menu = NULL;
 static GHashTable *tech_items = NULL;
+static GHashTable *service_items = NULL;
 static int item_position = 3;
 static gboolean disabled = TRUE;
 
@@ -68,6 +73,68 @@ static void delete_technology_item(gpointer data)
 	item_position--;
 }
 
+static void add_or_update_service(const char *path, int position)
+{
+	GtkService *s;
+
+	s = gtk_service_new(path);
+
+	if (position > 9)
+		gtk_menu_shell_append(GTK_MENU_SHELL(cui_more_menu),
+							(GtkWidget *)s);
+	else
+		gtk_menu_shell_insert(GTK_MENU_SHELL(cui_right_menu),
+						(GtkWidget *)s, position);
+
+	gtk_widget_set_visible((GtkWidget *)s, TRUE);
+	gtk_widget_show((GtkWidget *)s);
+
+	g_hash_table_insert(service_items, s->path, s);
+}
+
+static void delete_service_item(gpointer data)
+{
+	GtkWidget *item = data;
+
+	gtk_widget_destroy(item);
+}
+
+static void get_services_cb(void *user_data)
+{
+	GSList *services, *list;
+	int item_position = 2;
+
+	services = connman_service_get_services();
+	if (services == NULL)
+		return;
+
+	gtk_widget_hide(GTK_WIDGET(cui_list_more_item));
+
+	for (list = services; list; list = list->next, item_position++)
+		add_or_update_service(list->data, item_position);
+
+	if (item_position > 10)
+		gtk_widget_show(GTK_WIDGET(cui_list_more_item));
+
+	g_slist_free(services);
+}
+
+static void remove_service_cb(const char *path)
+{
+	g_hash_table_remove(service_items, path);
+}
+
+static void scanning_cb(void *user_data)
+{
+	GtkSpinner *spin;
+
+	spin = (GtkSpinner *)gtk_bin_get_child(GTK_BIN(cui_scan_spinner));
+
+	gtk_spinner_stop(spin);
+	gtk_widget_hide((GtkWidget *)cui_scan_spinner);
+	gtk_widget_hide((GtkWidget *)spin);
+}
+
 static void cui_item_offlinemode_activate(GtkMenuItem *menuitem,
 						gpointer user_data)
 {
@@ -84,6 +151,20 @@ static void cui_popup_right_menu(GtkStatusIcon *trayicon,
 						gpointer user_data)
 {
 	GList *tech_list, *list;
+	GtkSpinner *spin;
+
+	spin = (GtkSpinner *)gtk_bin_get_child(GTK_BIN(cui_scan_spinner));
+
+	gtk_widget_hide(GTK_WIDGET(cui_list_more_item));
+	gtk_widget_show((GtkWidget *)cui_scan_spinner);
+	gtk_widget_show((GtkWidget *)spin);
+
+	gtk_spinner_start(spin);
+
+	connman_service_set_removed_callback(remove_service_cb);
+
+	connman_service_refresh_services_list(get_services_cb,
+							scanning_cb, user_data);
 
 	if (disabled == TRUE)
 		goto popup;
@@ -117,8 +198,10 @@ static void cui_popdown_right_menu(GtkMenu *menu, gpointer user_data)
 {
 	connman_technology_set_removed_callback(NULL);
 	connman_technology_set_added_callback(NULL);
-
+	connman_service_set_removed_callback(NULL);
+	g_hash_table_remove_all(service_items);
 	g_hash_table_remove_all(tech_items);
+	connman_service_free_services_list();
 }
 
 static void cui_enable_item(gboolean enable)
@@ -164,13 +247,21 @@ gint cui_load_right_menu(GtkBuilder *builder, GtkStatusIcon *trayicon)
 							"cui_right_menu");
 	cui_item_quit = (GtkMenuItem *) gtk_builder_get_object(builder,
 							"cui_item_quit");
-	cui_item_mode_off = (GtkWidget *) gtk_builder_get_object(builder,
-						"cui_item_offlinemode_off");
-	cui_item_mode_on = (GtkWidget *) gtk_builder_get_object(builder,
-						"cui_item_offlinemode_on");
-	cui_tethering_menu = (GtkMenu *) gtk_builder_get_object(builder,
-						"cui_tethering_menu");
+	cui_more_menu = (GtkMenu *) gtk_builder_get_object(builder,
+							"cui_more_menu");
+	cui_list_more_item = (GtkMenuItem *) gtk_builder_get_object(builder,
+							"cui_list_more_item");
+	cui_scan_spinner = (GtkMenuItem *) gtk_builder_get_object(builder,
+							"cui_scan_spinner");
 
+	cui_item_mode_off = (GtkWidget *) gtk_builder_get_object(builder,
+							"cui_item_offlinemode_off");
+	cui_item_mode_on = (GtkWidget *) gtk_builder_get_object(builder,
+							"cui_item_offlinemode_on");
+	cui_tethering_menu = (GtkMenu *) gtk_builder_get_object(builder,
+							"cui_tethering_menu");
+
+	gtk_container_add(GTK_CONTAINER(cui_scan_spinner), gtk_spinner_new());
 	g_signal_connect(cui_right_menu, "deactivate",
 				G_CALLBACK(cui_popdown_right_menu), NULL);
 	g_signal_connect(cui_item_mode_off, "activate",
@@ -178,6 +269,8 @@ gint cui_load_right_menu(GtkBuilder *builder, GtkStatusIcon *trayicon)
 	g_signal_connect(cui_item_mode_on, "activate",
 			G_CALLBACK(cui_item_offlinemode_activate), NULL);
 
+	service_items = g_hash_table_new_full(g_str_hash, g_str_equal,
+						NULL, delete_service_item);
 	tech_items = g_hash_table_new_full(g_str_hash, g_str_equal,
 						NULL, delete_technology_item);
 

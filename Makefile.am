@@ -27,8 +27,8 @@ uidir = $(datadir)/connman_ui_gtk/ui
 iconsdir = $(datadir)/connman_ui_gtk/icons
 endif
 
-ui_DATA = data/ui/agent.ui data/ui/left_menu.ui data/ui/right_menu.ui \
-					data/ui/settings.ui data/ui/tray.ui
+ui_DATA = data/ui/agent.ui data/ui/right_menu.ui data/ui/settings.ui \
+		data/ui/tray.ui
 
 icons_DATA = data/icons/gsm-3g-full.png \
 		data/icons/network-wired-symbolic.png \
@@ -49,11 +49,11 @@ AM_CFLAGS = @GLIB_CFLAGS@ @DBUS_CFLAGS@ \
 bin_PROGRAMS = src/connman-ui-gtk
 src_connman_ui_gtk_SOURCES = $(gdbus_sources) $(common_sources) \
 			src/main.c src/tray.c \
-			src/left-menu.c src/right-menu.c \
-			src/gtktechnology.h src/gtktechnology.c \
-			src/gtkservice.h src/gtkservice.c \
-			src/agent_dialogs.c src/settings.c \
-			src/theme.c src/utils.c
+			src/right-menu.c src/gtktechnology.h \	
+			src/gtktechnology.c src/gtkservice.h \
+			src/gtkservice.c src/agent_dialogs.c \
+			src/settings.c src/theme.c \
+			src/utils.c
 src_connman_ui_gtk_CFLAGS = $(AM_CFLAGS) @GTK_CFLAGS@
 src_connman_ui_gtk_LDADD = @GLIB_LIBS@ @DBUS_LIBS@ @GTK_LIBS@
 

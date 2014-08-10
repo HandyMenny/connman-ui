@@ -56,7 +56,6 @@ static void connman_down(void *user_data)
 
 	cui_trayicon_update_icon();
 
-	cui_tray_left_menu_disable();
 	cui_right_menu_enable_only_quit();
 }
 
@@ -103,4 +102,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-

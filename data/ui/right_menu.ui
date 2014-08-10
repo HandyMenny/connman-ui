@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.18.3 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.0"/>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -19,32 +20,32 @@
   <object class="GtkMenu" id="cui_right_menu">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkImageMenuItem" id="cui_item_offlinemode_on">
-        <property name="label" translatable="yes">Airplane Mode</property>
+      <object class="GtkMenuItem" id="service_list_menu_item">
         <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">unset airplane mode</property>
-        <property name="image">image1</property>
-        <property name="use_stock">False</property>
+        <property name="events"/>
       </object>
     </child>
     <child>
-      <object class="GtkImageMenuItem" id="cui_item_offlinemode_off">
-        <property name="label" translatable="yes">Airplane Mode</property>
+      <object class="GtkMenuItem" id="cui_scan_spinner">
         <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">set airplane mode</property>
-        <property name="image">image2</property>
-        <property name="use_stock">False</property>
+        <property name="tooltip_text" translatable="yes">Scanning...</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorMenuItem" id="cui_sep_technology_up">
+      <object class="GtkMenuItem" id="cui_list_more_item">
         <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <child type="submenu">
+          <object class="GtkMenu" id="cui_more_menu">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+        </child>
       </object>
     </child>
     <child>
@@ -69,6 +70,35 @@
             <property name="can_focus">False</property>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="cui_sep_scan_list">
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImageMenuItem" id="cui_item_offlinemode_on">
+        <property name="label" translatable="yes">Airplane Mode</property>
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">unset airplane mode</property>
+        <property name="image">image1</property>
+        <property name="use_stock">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImageMenuItem" id="cui_item_offlinemode_off">
+        <property name="label" translatable="yes">Airplane Mode</property>
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">set airplane mode</property>
+        <property name="image">image2</property>
+        <property name="use_stock">False</property>
       </object>
     </child>
   </object>
